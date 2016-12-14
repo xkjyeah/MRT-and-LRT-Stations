@@ -44,6 +44,12 @@ data = download_stuff('MRT STATION') + download_stuff('LRT STATION')
 data = [d for e in data for d in e['SearchResults'][1:]]
 data = [d for d in data if d['SEARCHVAL'].endswith('STATION')]
 
+# exclude the ones starting with the name of a bank
+# (these are ATM locations)
+bank_names = list(open('./bank_names.txt'))
+bank_names = [b.strip() + ' ' for b in bank_names]
+
+data = [d for d in data if not any([d['SEARCHVAL'].upper().startswith(bank_name.upper()) for bank_name in bank_names])]
 
 # output the pickle file
 cPickle.dump(data, gzip.open('mrt_lrt.pickle.gz', 'w'))
